@@ -1,7 +1,0 @@
-{
-  "allowedLicenses": ["0BSD"],
-  "allowedPackages": ["type-fest"],
-  "packagesDirectory": null,
-  "checkSrcDirectories": ["src"],
-  "allowedFiles": ["src/test/license"]
-}

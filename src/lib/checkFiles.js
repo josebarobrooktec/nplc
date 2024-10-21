@@ -13,11 +13,11 @@ function getLicense(filePath) {
 
   const licenseLineIndex = fileLines.findIndex((line) => line.includes('LICENSE'));
   if (licenseLineIndex !== -1) {
-    let liceseLines = fileLines.slice(licenseLineIndex, licenseLineIndex + 2);
+    const liceseLines = fileLines.slice(licenseLineIndex, licenseLineIndex + 2);
     licenseText = liceseLines.join(' ');
   }
   if (!licenseText) {
-    licenseText = fileLines[0];
+    [licenseText] = fileLines;
   }
   return buildLicenseObject(filePath, licenseText.trim());
 }
@@ -39,15 +39,28 @@ function searchLicenseFiles(directory = __dirname) {
       const directoryLicences = searchLicenseFiles(fullPath); // Recursive call for directories
       licenses.push(...directoryLicences);
     } else if (file.isFile()) {
-      if (!file.name) {
-        continue;
+      if (file.name) {
+        const isLicenseFile = BASENAMES_PRECEDENCE.some(
+          (filePattern) => filePattern.test(file.name.toUpperCase()),
+        );
+
+        if (isLicenseFile) {
+          const license = getLicense(fullPath);
+          if (license) {
+            licenses.push(license);
+          }
+        }
       }
-      
-      const isLicenseFile = BASENAMES_PRECEDENCE.some((filePattern) => filePattern.test(file.name.toUpperCase()));
-      
+
+      const isLicenseFile = BASENAMES_PRECEDENCE.some(
+        (filePattern) => filePattern.test(file.name.toUpperCase()),
+      );
+
       if (isLicenseFile) {
         const license = getLicense(fullPath);
-        license && licenses.push(license);
+        if (license) {
+          licenses.push(license);
+        }
       }
     }
   }
@@ -57,6 +70,7 @@ function searchLicenseFiles(directory = __dirname) {
 function checkLicenceFiles() {
   const nonAcceptableFiles = [];
   checkSrcDirectories.forEach((directory) => {
+    console.log('Checking files directory:', directory);
     const directoryLicenses = searchLicenseFiles(directory);
     const nonAcceptableLicences = directoryLicenses.filter((fl) => {
       if (allowedFiles.includes(fl.name)) {
@@ -73,9 +87,9 @@ function checkLicenceFiles() {
 }
 
 const checkFiles = () => {
-  if (!checkSrcDirectories?.length) {
+  if (!checkSrcDirectories || !checkSrcDirectories.length) {
     console.log('No file directories to check');
-    return
+    return;
   }
   const { nonAcceptableFiles } = checkLicenceFiles();
   if (nonAcceptableFiles.length > 0) {

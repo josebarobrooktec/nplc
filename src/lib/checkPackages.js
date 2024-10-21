@@ -1,10 +1,11 @@
 const checker = require('license-checker');
-const { allowedLicenses } = require('./getConfig');
+const { allowedLicenses, allowedPackages } = require('./getConfig');
 
 const checkPackages = () => {
   checker.init({
     start: './',
     onlyAllow: allowedLicenses.join(';'),
+    excludePackages: allowedPackages.join(';'),
   }, (err) => {
     if (err) {
       console.log('err', err);
