@@ -1,29 +1,27 @@
 const fs = require('fs');
 const path = require('path');
+const chalk = require('chalk');
 
-let process;
-try {
-  // eslint-disable-next-line global-require
-  process = require('node:process');
-} catch (error) {
-  // eslint-disable-next-line global-require
-  process = require('process');
-}
-
-const { cwd } = process;
-
-const sampleRcFile = require('../../.checkLicensesrc.json');
-
+const { cwd, isInit } = require('./getParams');
 const { DEFAULT_ALLOWED_LICENSES } = require('../constants/licenses');
 
-const rcPath = path.join(cwd(), '.checkLicensesrc.json');
+const rcFileName = '.nplcrc.json';
+
+// rc filename is a constant
+// eslint-disable-next-line import/no-dynamic-require
+const sampleRcFile = require(`../../${rcFileName}`);
+
+const rcPath = path.join(cwd(), rcFileName);
 
 let rc = {};
+
 if (fs.existsSync(rcPath)) {
   rc = JSON.parse(fs.readFileSync(rcPath, 'utf8'));
-} else {
-  console.log('creating rc file');
+} else if (isInit) {
+  console.log(chalk.dim('Creating rc file'));
   fs.writeFileSync(rcPath, JSON.stringify(sampleRcFile, null, 2));
+} else {
+  console.log(chalk.dim('No rc file found. Run with --init to create one'));
 }
 
 let allowedLicenses = (rc.allowedLicenses || []).map((license) => license.trim());

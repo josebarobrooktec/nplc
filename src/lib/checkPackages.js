@@ -1,5 +1,6 @@
 const checker = require('license-checker');
 const { allowedLicenses, allowedPackages } = require('./getConfig');
+const chalk = require('chalk');
 
 const checkPackages = () => {
   checker.init({
@@ -8,10 +9,11 @@ const checkPackages = () => {
     excludePackages: allowedPackages.join(';'),
   }, (err) => {
     if (err) {
-      console.log('err', err);
+      console.log(chalk.bgRed.bold('This package has non-acceptable licenses'));
+      console.log(err);
       process.exit(1);
     } else {
-      console.log('Package licenses are OK');
+      console.log(`Package licenses are ${chalk.bgGreen.bold('OK')}`);
     }
   });
 };

@@ -1,17 +1,19 @@
 {
   "name": "nplc_test",
-  "version": "1.0.7",
+  "version": "1.1.0",
   "description": "This is a licence checker for files and packages",
   "main": "index.js",
   "bin": {
     "nplc": "./index.js"
   },
   "scripts": {
+    "lint": "eslint .",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
   "license": "MIT",
   "dependencies": {
+    "chalk": "^4.1.2",
     "license-checker": "^25.0.1",
     "sha512": "^0.0.1"
   },

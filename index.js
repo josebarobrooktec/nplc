@@ -1,9 +1,16 @@
 #!/usr/bin/env node
 const { checkPackages } = require('./src/lib/checkPackages');
 const { checkFiles } = require('./src/lib/checkFiles');
+const { allowedLicenses } = require('./src/lib/getConfig');
+const chalk = require('chalk');
 
 const packageJson = require('./package.json');
-console.log(`Running check-licenses version: ${packageJson.version}`);
+const { showHelp, showLicenses } = require('./src/lib/getParams');
 
-checkPackages();
-checkFiles();
+if (showLicenses) {
+  console.log(allowedLicenses);
+} else if (!showHelp) {
+  console.log(chalk.dim(`Running check-licenses version: ${packageJson.version}`));
+  checkPackages();
+  checkFiles();
+}

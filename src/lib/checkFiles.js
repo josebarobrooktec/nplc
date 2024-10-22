@@ -1,5 +1,6 @@
 const fs = require('fs');
 const path = require('path');
+const chalk = require('chalk');
 
 const { allowedLicenses, checkSrcDirectories, allowedFiles } = require('./getConfig');
 const { BASENAMES_PRECEDENCE } = require('../constants/files');
@@ -28,7 +29,7 @@ function searchLicenseFiles(directory = __dirname) {
   try {
     filesFound = fs.readdirSync(directory, { withFileTypes: true });
   } catch (error) {
-    console.error('Error reading directory:', directory);
+    console.error(chalk.red('Error reading directory:'), directory);
     return [];
   }
 
@@ -88,18 +89,18 @@ function checkLicenceFiles() {
 
 const checkFiles = () => {
   if (!checkSrcDirectories || !checkSrcDirectories.length) {
-    console.log('No file directories to check');
+    console.log(chalk.dim('No file directories to check'));
     return;
   }
   const { nonAcceptableFiles } = checkLicenceFiles();
   if (nonAcceptableFiles.length > 0) {
-    console.error('Non-acceptable packages found:');
+    console.error(chalk.bgRed.bold('Non-acceptable packages found:'));
     nonAcceptableFiles.forEach((p) => {
       console.error(`${p.name}: ${p.license}`);
     });
     process.exit(1);
   }
-  console.log('License files are OK');
+  console.log(`License files are ${chalk.bgRed.bold('OK')}`);
 };
 
 module.exports = {
